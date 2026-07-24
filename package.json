@@ -1,0 +1,17 @@
+{
+  "name": "skillswap",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+   "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+   "scripts": {
+    "dev:api": "npm --workspace apps/api run dev",
+    "dev:web": "npm --workspace apps/web run dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

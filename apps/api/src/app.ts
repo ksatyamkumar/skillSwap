@@ -5,8 +5,8 @@ import routes from "./routes";
 import { notFoundMiddleware } from "./middleware/notFound.middleware";
 import { errorMiddleware } from "./middleware/error.middleware";
 import { env } from "./config/env";
-import router from "./routes";
-import authRoutes from "./modules/auth";
+// import router from "./routes";
+// import authRoutes from "./modules/auth";
 import cookieParser from "cookie-parser";
 
 

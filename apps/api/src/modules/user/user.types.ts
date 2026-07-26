@@ -1,29 +1,46 @@
+import { Document } from "mongoose";
+
 export enum UserRole {
   USER = "USER",
   ADMIN = "ADMIN",
 }
 
+export enum Availability {
+  WEEKDAYS = "WEEKDAYS",
+  WEEKENDS = "WEEKENDS",
+  FLEXIBLE = "FLEXIBLE",
+}
+
 export interface IUser {
-  name: string;
+  fullName: string;
   email: string;
   password: string;
 
   role: UserRole;
 
   avatar?: string;
+
   bio?: string;
-  location?: string;
 
-  skillsToTeach: string[];
-  skillsToLearn: string[];
+  city?: string;
 
-  timeCredits: number;
+  country?: string;
+
+  skillsOffered: string[];
+
+  skillsWanted: string[];
+
+  experienceYears: number;
+
+  availability: Availability;
 
   rating: number;
+
   reviewCount: number;
 
   isVerified: boolean;
-  isActive: boolean;
 
-  refreshToken?: string;
+  isActive: boolean;
 }
+
+export interface IUserDocument extends IUser, Document {}

@@ -1,5 +1,6 @@
 import { FilterQuery, UpdateQuery } from "mongoose";
-import { IUserDocument, User } from "./user.model";
+import { User } from "./user.model";
+import { IUserDocument } from "./user.types";
 
 class UserRepository {
   async create(userData: Partial<IUserDocument>) {
@@ -11,7 +12,7 @@ class UserRepository {
   }
 
   async findByEmailWithPassword(email: string) {
-    return User.findOne({ email }).select("+password +refreshToken");
+    return User.findOne({ email }).select("+password");
   }
 
   async findById(id: string) {
@@ -32,6 +33,11 @@ class UserRepository {
     });
   }
 
+    async deleteById(id: string) {
+    return User.findByIdAndDelete(id);
+  }
+
+
   async saveRefreshToken(
     userId: string,
     refreshToken: string
@@ -49,6 +55,10 @@ class UserRepository {
       { isActive: false },
       { new: true }
     );
+  }
+
+   async exists(filter: FilterQuery<IUserDocument>) {
+    return User.exists(filter);
   }
 }
 

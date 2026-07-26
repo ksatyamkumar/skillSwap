@@ -1,16 +1,17 @@
-import mongoose, { Schema, Document } from "mongoose";
-import { IUser, UserRole } from "./user.types";
-
-export interface IUserDocument extends IUser, Document {}
+import mongoose, { Schema } from "mongoose";
+import bcrypt from "bcrypt";
+import {
+  Availability,
+  IUserDocument,
+  UserRole,
+} from "./user.types";
 
 const userSchema = new Schema<IUserDocument>(
   {
-    name: {
+    fullName: {
       type: String,
       required: true,
       trim: true,
-      minlength: 2,
-      maxlength: 50,
     },
 
     email: {
@@ -19,12 +20,12 @@ const userSchema = new Schema<IUserDocument>(
       unique: true,
       lowercase: true,
       trim: true,
-      index: true,
     },
 
     password: {
       type: String,
       required: true,
+      minlength: 8,
       select: false,
     },
 
@@ -32,7 +33,6 @@ const userSchema = new Schema<IUserDocument>(
       type: String,
       enum: Object.values(UserRole),
       default: UserRole.USER,
-      index: true,
     },
 
     avatar: {
@@ -42,31 +42,40 @@ const userSchema = new Schema<IUserDocument>(
 
     bio: {
       type: String,
-      maxlength: 500,
       default: "",
+      maxlength: 500,
     },
 
-    location: {
+    city: {
       type: String,
       default: "",
     },
 
-    skillsToTeach: {
-      type: [String],
-      default: [],
-      index: true,
+    country: {
+      type: String,
+      default: "",
     },
 
-    skillsToLearn: {
+    skillsOffered: {
       type: [String],
       default: [],
-      index: true,
     },
 
-    timeCredits: {
+    skillsWanted: {
+      type: [String],
+      default: [],
+    },
+
+    experienceYears: {
       type: Number,
       default: 0,
       min: 0,
+    },
+
+    availability: {
+      type: String,
+      enum: Object.values(Availability),
+      default: Availability.FLEXIBLE,
     },
 
     rating: {
@@ -74,13 +83,11 @@ const userSchema = new Schema<IUserDocument>(
       default: 0,
       min: 0,
       max: 5,
-      index: true,
     },
 
     reviewCount: {
       type: Number,
       default: 0,
-      min: 0,
     },
 
     isVerified: {
@@ -92,17 +99,20 @@ const userSchema = new Schema<IUserDocument>(
       type: Boolean,
       default: true,
     },
-
-    refreshToken: {
-      type: String,
-      default: "",
-      select: false,
-    },
   },
   {
     timestamps: true,
-    versionKey: false,
   }
 );
 
-export const User = mongoose.model<IUserDocument>("User", userSchema);
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
+  this.password = await bcrypt.hash(this.password, 12);
+
+  next();
+});
+
+export const User =
+  mongoose.models.User ||
+  mongoose.model<IUserDocument>("User", userSchema);

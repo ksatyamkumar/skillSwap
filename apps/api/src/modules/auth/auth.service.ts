@@ -2,7 +2,8 @@ import bcrypt from "bcrypt";
 import { LoginInput, RegisterInput } from "./auth.validation";
 import { userRepository } from "../user/user.repository";
 import { ConflictError, UnauthorizedError } from "../../shared/errors";
-import { generateAccessToken, generateRefreshToken } from "../../shared/auth";
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../../shared/auth";
+import { log } from "console";
 
 interface SafeUser {
   id: string;
@@ -19,7 +20,7 @@ interface LoginResponse {
 
 class AuthService {
   async register(data: RegisterInput) {
-    const { name, email, password } = data;
+    const { fullName, email, password } = data;
 
     // Check if email already exists
     const existingUser = await userRepository.findByEmail(email);
@@ -29,13 +30,14 @@ class AuthService {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // const hashedPassword = await bcrypt.hash(password, 12);
+    // password is hash inside user model with the help or pre save hook
 
     // Create user
     const user = await userRepository.create({
-      name,
+      fullName,
       email,
-      password: hashedPassword,
+      password
     });
 
     // Return safe user object
@@ -54,7 +56,7 @@ class AuthService {
     const user = await userRepository.findByEmailWithPassword(data.email);
 
     if (!user) {
-      throw new UnauthorizedError("Invalid email or password");
+      throw new UnauthorizedError("Invalid1 email or password");
     }
 
     const isPasswordValid = await bcrypt.compare(
@@ -63,7 +65,7 @@ class AuthService {
     );
 
     if (!isPasswordValid) {
-      throw new UnauthorizedError("Invalid email or password");
+      throw new UnauthorizedError("Invalid2 email or password");
     }
 
     const payload = {
@@ -86,6 +88,8 @@ class AuthService {
       refreshToken,
     };
   }
+
+
 
   async refreshToken(refreshToken: string){
 
@@ -113,6 +117,12 @@ return {
     accessToken,
 };
   }
+
+
+  async logout(): Promise<void> {
+  return;
+}
+
 
 }
 

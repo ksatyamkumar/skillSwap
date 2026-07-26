@@ -6,7 +6,7 @@ import { verifyAccessToken } from "../shared/auth/jwt";
 
 import { userRepository } from "../modules/user/user.repository";
 
-export async function protect(
+export async function authMiddleware (
     req: Request,
     _res: Response,
     next: NextFunction

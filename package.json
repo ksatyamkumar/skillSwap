@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-   "workspaces": [
+  "workspaces": [
     "apps/*",
     "packages/*"
   ],
-   "scripts": {
+  "scripts": {
     "dev:api": "npm --workspace apps/api run dev",
     "dev:web": "npm --workspace apps/web run dev"
   },

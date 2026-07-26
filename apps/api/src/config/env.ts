@@ -8,7 +8,14 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]),
   CLIENT_URL: z.string().url(),
   MONGODB_URI: z.string(),
-  JWT_SECRET: z.string().min(10),
+
+  JWT_SECRET: z.string().min(20),
+
+JWT_EXPIRES_IN: z.string(),
+
+REFRESH_TOKEN_SECRET: z.string().min(20),
+
+REFRESH_TOKEN_EXPIRES_IN: z.string(),
 });
 
 export const env = envSchema.parse(process.env);

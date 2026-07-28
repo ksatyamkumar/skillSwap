@@ -3,7 +3,6 @@ import { LoginInput, RegisterInput } from "./auth.validation";
 import { userRepository } from "../user/user.repository";
 import { ConflictError, UnauthorizedError } from "../../shared/errors";
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../../shared/auth";
-import { log } from "console";
 
 interface SafeUser {
   id: string;

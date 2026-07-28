@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { userService } from "./user.service";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { asyncHandler } from "../../utils/asynchandler";
-import { updateProfileSchema } from "./user.validation";
+// import { updateProfileSchema } from "./user.validation";
 
 class UserController {
   getMyProfile = asyncHandler(async (req: Request, res: Response) => {

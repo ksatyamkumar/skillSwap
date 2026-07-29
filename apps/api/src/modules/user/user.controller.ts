@@ -33,6 +33,35 @@ class UserController {
   }
 );
 
+getUserReviews = asyncHandler(
+  async (req, res) => {
+    const reviews =
+      await userService.getUserReviews(
+        req.params.id
+      );
+
+    ApiResponse.success(
+      res,
+      reviews,
+      "Reviews fetched successfully"
+    );
+  }
+);
+
+getUserRating = asyncHandler(
+  async (req, res) => {
+    const rating =
+      await userService.getUserRating(
+        req.params.id
+      );
+
+    ApiResponse.success(
+      res,
+      rating,
+      "User rating fetched successfully"
+    );
+  }
+);
 
 }
 

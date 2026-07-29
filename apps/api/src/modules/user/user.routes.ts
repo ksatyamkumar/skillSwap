@@ -19,4 +19,14 @@ router.patch(
   userController.updateMyProfile
 );
 
+router.get(
+  "/:id/reviews",
+  userController.getUserReviews
+);
+
+router.get(
+  "/:id/rating",
+  userController.getUserRating
+);
+
 export default router;

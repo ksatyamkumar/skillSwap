@@ -5,6 +5,7 @@ import { userRoutes } from "../modules/user";
 import { skillRoutes } from "../modules/skill";
 import { exchangeRoutes } from "../modules/exchange";
 import { reviewRoutes } from "../modules/reviews";
+import { notificationRoutes } from "../modules/notification";
 
 const router = Router();
 
@@ -16,6 +17,10 @@ router.use("/exchanges", exchangeRoutes);
 router.use(
   "/reviews",
   reviewRoutes
+);
+router.use(
+  "/notifications",
+  notificationRoutes
 );
 
 export default router;

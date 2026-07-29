@@ -13,6 +13,9 @@ import {
 import { Types } from "mongoose";
 import { UpdateExchangeStatusDto } from "./exchange.types";
 
+import { notificationService } from "../notification";
+import { NotificationType } from "../notification/notification.types";
+
 class ExchangeService {
   async createExchange(
     data: CreateExchangeDto,
@@ -46,13 +49,29 @@ class ExchangeService {
     }
 
     // 4. Create exchange
-    return exchangeRepository.create({
-      requester: new Types.ObjectId(requesterId),
-      receiver: skill.owner,
-      skill: skill._id,
-      message: data.message,
-      status: ExchangeStatus.PENDING,
-    });
+    // 4. Create exchange
+const exchange = await exchangeRepository.create({
+  requester: new Types.ObjectId(requesterId),
+  receiver: skill.owner,
+  skill: skill._id,
+  message: data.message,
+  status: ExchangeStatus.PENDING,
+});
+
+// 5. Create notification
+await notificationService.createNotification({
+  recipient: exchange.receiver,
+  sender: exchange.requester,
+  type: NotificationType.EXCHANGE_REQUEST,
+  title: "New Exchange Request",
+  message: "You have received a new skill exchange request.",
+  referenceId: exchange._id,
+});
+
+// 6. Return exchange
+return exchange;
+
+
   }
 
 async getSentRequests(userId: string) {
@@ -86,10 +105,43 @@ async updateExchangeStatus(
     );
   }
 
-  return exchangeRepository.updateStatus(
+  const updatedExchange =
+  await exchangeRepository.updateStatus(
     exchangeId,
     data.status
   );
+
+  // create notification
+  if (
+  updatedExchange!.status ===
+  ExchangeStatus.ACCEPTED
+) {
+  await notificationService.createNotification({
+    recipient: updatedExchange!.requester,
+    sender: updatedExchange!.receiver,
+    type: NotificationType.EXCHANGE_ACCEPTED,
+    title: "Exchange Request Accepted",
+    message:
+      "Your exchange request has been accepted.",
+    referenceId: updatedExchange!._id,
+  });
+}else if(
+  updatedExchange!.status ===
+  ExchangeStatus.REJECTED
+){
+  await notificationService.createNotification({
+    recipient: updatedExchange!.requester,
+    sender: updatedExchange!.receiver,
+    type: NotificationType.EXCHANGE_REJECTED,
+    title: "Exchange Request Rejected",
+    message:
+      "Your exchange request has been rejected.",
+    referenceId: updatedExchange!._id,
+  });
+}
+
+return updatedExchange;
+
 }
 
 async cancelExchange(
@@ -153,10 +205,29 @@ async completeExchange(
     );
   }
 
-  return exchangeRepository.updateStatus(
-    exchangeId,
-    ExchangeStatus.COMPLETED
-  );
+   // Update exchange status
+  const updatedExchange =
+    await exchangeRepository.updateStatus(
+      exchangeId,
+      ExchangeStatus.COMPLETED
+    );
+
+  // Notify the other participant
+  const recipient = isRequester
+    ? exchange.receiver._id
+    : exchange.requester._id;
+
+  await notificationService.createNotification({
+    recipient,
+    sender: new Types.ObjectId(userId),
+    type: NotificationType.EXCHANGE_COMPLETED,
+    title: "Exchange Completed",
+    message:
+      "Your skill exchange has been marked as completed.",
+    referenceId: updatedExchange!._id,
+  });
+
+  return updatedExchange;
 }
 
 }

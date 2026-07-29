@@ -16,6 +16,8 @@ import {
 
 import { Types } from "mongoose";
 import { userRepository } from "../user";
+import { notificationService } from "../notification";
+import { NotificationType } from "../notification/notification.types";
 
 class ReviewService {
   async createReview(
@@ -78,7 +80,20 @@ class ReviewService {
       comment: data.comment,
     };
 
-    return reviewRepository.create(reviewData);
+    // Create review
+    const review = await reviewRepository.create(reviewData);
+
+    // create notification
+    await notificationService.createNotification({
+  recipient: review.reviewee,
+  sender: review.reviewer,
+  type: NotificationType.REVIEW_RECEIVED,
+  title: "New Review Received",
+  message: `You received a ${review.rating}-star review.`,
+  referenceId: review._id,
+});
+
+return review;
   }
 
 

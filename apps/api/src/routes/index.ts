@@ -1,11 +1,11 @@
 import { Router } from "express";
-import healthRoutes from "./health.route";
 import authRoutes from "../modules/auth";
 import { userRoutes } from "../modules/user";
 import { skillRoutes } from "../modules/skill";
 import { exchangeRoutes } from "../modules/exchange";
 import { reviewRoutes } from "../modules/reviews";
 import { notificationRoutes } from "../modules/notification";
+import { healthRoutes } from "../modules/health";
 
 const router = Router();
 

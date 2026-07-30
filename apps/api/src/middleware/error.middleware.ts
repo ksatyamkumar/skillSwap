@@ -9,6 +9,20 @@ export function errorMiddleware(
   res: Response,
   _next: NextFunction
 ) {
+  // Log every error
+  logger.error({
+  method: req.method,
+  path: req.originalUrl,
+  message:
+    error instanceof Error
+      ? error.message
+      : "Unknown Error",
+  stack:
+    error instanceof Error
+      ? error.stack
+      : undefined,
+});
+
   // Handle custom application errors
   if (error instanceof AppError) {
     return res.status(error.statusCode).json({
@@ -29,8 +43,31 @@ export function errorMiddleware(
     });
   }
 
-  // Unexpected errors
-  logger.error(error);
+  // mongodb duplicate key handling
+  if (
+  error &&
+  typeof error === "object" &&
+  "code" in error &&
+  error.code === 11000
+) {
+  return res.status(409).json({
+    success: false,
+    message: "Resource already exists",
+  });
+}
+
+// Add Mongo CastError
+if (
+  error &&
+  typeof error === "object" &&
+  "name" in error &&
+  error.name === "CastError"
+) {
+  return res.status(400).json({
+    success: false,
+    message: "Invalid resource id",
+  });
+}
 
   return res.status(500).json({
   success: false,

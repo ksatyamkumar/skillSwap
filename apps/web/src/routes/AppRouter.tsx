@@ -1,15 +1,18 @@
 import { createBrowserRouter } from "react-router-dom";
 
+import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
 
-import Home from "@/pages/Home";
+import Home from "../pages/Home";
 import Dashboard from "../pages/Dashboard";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import NotFound from "../pages/NotFound";
 
+import ProtectedRoute from "./ProtectedRoute";
+import PublicRoute from "./PublicRoute";
+
 import { ROUTES } from "./routePaths";
-import MainLayout from "../layouts/MainLayout";
 
 export const router = createBrowserRouter([
   {
@@ -21,7 +24,11 @@ export const router = createBrowserRouter([
       },
       {
         path: ROUTES.DASHBOARD,
-        element: <Dashboard />,
+        element: (
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        ),
       },
     ],
   },
@@ -31,11 +38,17 @@ export const router = createBrowserRouter([
     children: [
       {
         path: ROUTES.LOGIN,
-        element: <Login />,
+        element: 
+        <PublicRoute>
+      <Login />
+    </PublicRoute>,
       },
       {
         path: ROUTES.REGISTER,
-        element: <Register />,
+        element: 
+        <PublicRoute>
+      <Register />
+    </PublicRoute>,
       },
     ],
   },

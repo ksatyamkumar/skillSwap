@@ -1,14 +1,30 @@
-import { Navigate, Outlet } from "react-router-dom";
-import { ROUTES } from "./routePaths";
+import { Navigate } from "react-router-dom";
 
-const isAuthenticated = false;
+import { useAuth } from "../features/auth/useAuth";
 
-const PublicRoute = () => {
-  return isAuthenticated ? (
-    <Navigate to={ROUTES.DASHBOARD} replace />
-  ) : (
-    <Outlet />
-  );
-};
+interface PublicRouteProps {
+  children: React.ReactNode;
+}
 
-export default PublicRoute;
+export default function PublicRoute({
+  children,
+}: PublicRouteProps) {
+  const {
+    isAuthenticated,
+    isLoading,
+  } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return children;
+}

@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../../features/auth/useAuth";
 
@@ -46,6 +46,9 @@ export default function Navbar() {
             >
               Logout
             </button>
+            <Link to="/profile">
+  Profile
+</Link>
 
           </div>
         )

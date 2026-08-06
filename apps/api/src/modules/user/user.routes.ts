@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { userController } from "./user.controller";
 import { authMiddleware } from "../../middleware/auth.middleware";
+import { upload } from "../../middleware/upload.middleware";
 // import { validate } from "../../middleware/validate.middleware";
 // import { updateProfileSchema } from "./user.validation";
 
@@ -27,6 +28,13 @@ router.get(
 router.get(
   "/:id/rating",
   userController.getUserRating
+);
+
+router.patch(
+  "/me/avatar",
+  authMiddleware,
+  upload.single("avatar"),
+  userController.updateAvatar
 );
 
 export default router;

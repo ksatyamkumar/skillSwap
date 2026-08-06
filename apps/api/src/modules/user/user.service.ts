@@ -2,6 +2,8 @@ import { userRepository } from "./user.repository";
 import { NotFoundError } from "../../shared/errors";
 import { IUserDocument } from "./user.types";
 import { reviewRepository } from "../reviews/review.repository";
+import { uploadToCloudinary } from "../../utils/cloudinary";
+import { BadRequestError } from "../../shared/errors";
 
 
 export class UserService {
@@ -29,6 +31,44 @@ export class UserService {
     userId,
     updateData
   );
+
+  return updatedUser;
+}
+
+async updateAvatar(
+  userId: string,
+  file: Express.Multer.File
+) {
+  // Check user exists
+  const existingUser =
+    await userRepository.findById(userId);
+
+  if (!existingUser) {
+    throw new NotFoundError("User not found");
+  }
+
+  // Check file exists
+  if (!file) {
+    throw new BadRequestError(
+      "Avatar image is required."
+    );
+  }
+
+  // Upload to Cloudinary
+  const uploadResult =
+    await uploadToCloudinary(
+      file.buffer,
+      "skillswap/avatars"
+    );
+
+  // Update avatar URL
+  const updatedUser =
+    await userRepository.updateById(
+      userId,
+      {
+        avatar: uploadResult.secure_url,
+      }
+    );
 
   return updatedUser;
 }

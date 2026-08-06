@@ -13,6 +13,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
 
 import { ROUTES } from "./routePaths";
+import Profile from "../pages/Profile";
 
 export const router = createBrowserRouter([
   {
@@ -50,6 +51,14 @@ export const router = createBrowserRouter([
       <Register />
     </PublicRoute>,
       },
+      {
+  path: ROUTES.PROFILE,
+  element: (
+    <ProtectedRoute>
+      <Profile />
+    </ProtectedRoute>
+  ),
+},
     ],
   },
 

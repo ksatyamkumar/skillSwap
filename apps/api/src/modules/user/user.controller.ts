@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { userService } from "./user.service";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { asyncHandler } from "../../utils/asynchandler";
+import { BadRequestError } from "../../shared/errors";
 // import { updateProfileSchema } from "./user.validation";
 
 class UserController {
@@ -29,6 +30,29 @@ class UserController {
       res,
       updatedUser,
       "Profile updated successfully"
+    );
+  }
+);
+
+updateAvatar = asyncHandler(
+  async (req: Request, res: Response) => {
+
+    if (!req.file) {
+      throw new BadRequestError(
+        "Avatar image is required."
+      );
+    }
+
+    const updatedUser =
+      await userService.updateAvatar(
+        req.user.id,
+        req.file
+      );
+
+    ApiResponse.success(
+      res,
+      updatedUser,
+      "Avatar updated successfully"
     );
   }
 );
